@@ -1,0 +1,29 @@
+Process Management Simulator Report
+
+Introduction
+This project demonstrates process creation, execution replacement, and synchronization using fork, execvp, and wait in a Unix-like environment. The program creates 10 child processes, each executing a unique command, while the parent process waits for their completion and reports their statuses.
+
+Implementation Summary
+1. The parent process creates 10 child processes using fork.
+2. Each child process executes a specific command such as echo, ls, and date using execvp.
+3. The parent waits for all child processes to terminate using wait.
+4. Process completion is reported, including exit status or termination by a signal.
+5. A Makefile was created to automate compilation with make and make clean.
+
+Results and Observations
+
+A. How processes were created and managed
+- The parent uses fork in a loop to spawn 10 child processes.
+- Each child inherits the parent’s memory space before being replaced by a new program using execvp.
+- If fork fails, an error is reported.
+
+B. Parent and child process interaction
+- Each child process prints its PID and executed command.
+- The parent waits for all child processes using wait to prevent zombie processes.
+- If a child exits normally, the exit status is reported.
+- If a child is terminated by a signal, the signal number is reported.
+
+Conclusion
+This project provided hands-on experience with process management in Unix systems, reinforcing how child processes are created and managed using fork, how child processes execute commands via execvp, and the importance of parent-child synchronization using wait. It also demonstrated how a Makefile simplifies compilation.
+
+Future improvements could include better error handling, logging to a file, or running custom user-defined commands.
