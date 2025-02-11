@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+#define NUM_CHILDREN 10  // Number of child processes
+
+int main() {
+    pid_t pid;
+    int status;
+
+    // Define commands for child processes
+    char *commands[NUM_CHILDREN][3] = {
+        {"echo", "Hello Dylan", NULL},  // Child 1: Print message
+        {"ls", "-l", NULL},            // Child 2: List files in long format
+        {"date", NULL, NULL},          // Child 3: Show current date/time
+        {"whoami", NULL, NULL},        // Child 4: Show current user
+        {"uname", "-a", NULL},         // Child 5: Show system info
+        {"pwd", NULL, NULL},           // Child 6: Show current directory
+        {"df", "-h", NULL},            // Child 7: Show disk usage
+        {"ps", "aux", NULL},           // Child 8: Show running processes
+        {"id", NULL, NULL},            // Child 9: Show user and group ID
+        {"uptime", NULL, NULL}         // Child 10: Show system uptime
+    };
+
+    for (int i = 0; i < NUM_CHILDREN; i++) {
+        pid = fork();
+
+        if (pid < 0) {
+            perror("Fork failed");
+            exit(1);
+        } 
+        else if (pid == 0) {  // Child Process
+            printf("Child %d (PID: %d) executing command: %s\n", i + 1, getpid(), commands[i][0]);
+            execvp(commands[i][0], commands[i]); // Execute command
+            perror("exec failed");  // If execvp fails
+            exit(1);
+        }
+    }
+
+    // Parent Process: Wait for all child processes to complete
+    for (int i = 0; i < NUM_CHILDREN; i++) {
+        pid_t finished_pid = wait(&status);
+        if (WIFEXITED(status)) {
+            printf("Child with PID %d exited with status %d\n", finished_pid, WEXITSTATUS(status));
+        } else if (WIFSIGNALED(status)) {
+            printf("Child with PID %d was terminated by signal %d\n", finished_pid, WTERMSIG(status));
+        }
+    }
+
+    printf("All child processes have completed.\n");
+    return 0;
+}
